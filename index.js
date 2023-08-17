@@ -21,7 +21,7 @@ mongoose.connection.once("open", () => {
 });
 const PORT = process.env.PORT || 4000;
 const httpServer = app.listen(PORT, () => {
-  console.log("Listening on port 4000");
+  console.log("Listening on port" + process.env.PORT);
 });
 
 const io = require("./socket").init(httpServer);

@@ -22,7 +22,7 @@ const app = express();
 const httpServer = http.createServer(app);
 app.use(express.json());
 app.use(function (req, res, next) {
-  const allowedOrigins = ['http://localhost:3000', 'https://company-manager-64bf8.web.app/'];
+  const allowedOrigins = ['http://localhost:3000', 'https://company-manager-64bf8.web.app'];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
        res.setHeader('Access-Control-Allow-Origin', origin);
@@ -45,6 +45,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: store,
+    cookie: { sameSite: 'none', secure: true }
   })
 );
 
@@ -105,7 +106,7 @@ async function startServer() {
   await appoloServer.start();
   app.use(
     "/graphql",
-    cors({ origin: ['http://localhost:3000', 'https://company-manager-64bf8.web.app/'] }),
+    cors({ origin: ['http://localhost:3000', 'https://company-manager-64bf8.web.app'] }),
     express.json(),
     expressMiddleware(appoloServer)
   );
