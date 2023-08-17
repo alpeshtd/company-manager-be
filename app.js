@@ -38,7 +38,7 @@ const store = new mongoDbStore({
   uri: "mongodb+srv://alpesh:alpesh@cluster0.ly1e4zw.mongodb.net/engg_works",
   collection: "sessions",
 });
-
+app.set('trust proxy', 1);
 app.use(
   session({
     secret: "MySecret",
