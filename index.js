@@ -19,8 +19,8 @@ mongoose.connect(
 mongoose.connection.once("open", () => {
   console.log("connected to database");
 });
-
-const httpServer = app.listen(4000, () => {
+const PORT = process.env.PORT || 4000;
+const httpServer = app.listen(PORT, () => {
   console.log("Listening on port 4000");
 });
 

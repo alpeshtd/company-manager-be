@@ -49,6 +49,7 @@ module.exports.isAuthenticated = async (req, res, next) => {
     try {
       decodedToken = jwt.verify(token, secretKey); // do not share jwt secret
     } catch (err) {
+      console.log(err)
       req.authenticated = false;
       req.authErr = "JWT has been tampered.";
     }
