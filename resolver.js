@@ -41,7 +41,7 @@ const resolvers = {
         .populate("utilizationById")
         .populate("performedById")
         .populate("orderId"),
-    Utilization: async (parent, args) =>
+    utilization: async (parent, args) =>
       await Utilization.findById(args.id)
         .populate("stockId")
         .populate("utilizationById")

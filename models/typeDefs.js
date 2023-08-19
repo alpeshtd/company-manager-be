@@ -151,7 +151,7 @@ const typeDefs = `
     stocks: [Stock],
     stock(id: ID!): Stock,
     utilizations: [Utilization],
-    Utilization(id: ID!): Utilization,
+    utilization(id: ID!): Utilization,
     incomes: [Income],
     income(id: ID!): Income,
     users: [User],

@@ -39,12 +39,12 @@ authRouter.get("/getUser", async (req, res, next) => {
 
 authRouter.post("/login", async (req, res, next) => {
   let { userName, password } = req.body;
-  userName = userName.trim().toLowerCase();
   if (!userName || !password) {
     req.authenticated = false;
     req.authErr = "Please provide required fields";
     // throw new Error("Please provide required fields");
   }
+  userName = userName.trim().toLowerCase();
 
   const userFound = await User.findOne({ userName }).select("+password");
   if (!userFound) {
