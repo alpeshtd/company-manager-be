@@ -46,12 +46,23 @@ notificationRouter.get("/getNotifications", async (req, res) => {
         populate: [
           {
             path: "purchaseTypeId",
+            strictPopulate: false
           },
           {
             path: "purchaseById",
+            strictPopulate: false
           },
           {
-            path: "purchaseConfirmedById"
+            path: "purchaseConfirmedById",
+            strictPopulate: false
+          },
+          {
+            path: "expenseById",
+            strictPopulate: false
+          },
+          {
+            path: "expenseConfirmedById",
+            strictPopulate: false
           }
         ],
       })

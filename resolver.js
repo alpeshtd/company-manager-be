@@ -1,5 +1,6 @@
 const Customer = require("./models/Customer");
 const Employee = require("./models/Employee");
+const Expense = require("./models/Expense");
 const Income = require("./models/Income");
 const Notification = require("./models/Notification");
 const Order = require("./models/Order");
@@ -32,6 +33,18 @@ const resolvers = {
         .populate("purchaseById")
         .populate("performedById")
         .populate("purchaseConfirmedById"),
+    expenses: async () =>
+      await Expense.find({})
+        .populate("orderId")
+        .populate("expenseById")
+        .populate("performedById")
+        .populate("expenseConfirmedById"),
+    expense: async (parent, args) =>
+      await Expense.findById(args.id)
+        .populate("orderId")
+        .populate("expenseById")
+        .populate("performedById")
+        .populate("expenseConfirmedById"),
     stocks: async () => await Stock.find({}).populate("performedById"),
     stock: async (parent, args) =>
       await Stock.findById(args.id).populate("performedById"),
@@ -202,6 +215,89 @@ const resolvers = {
         throw new Error(`Purchase with ID ${id} not found`);
       }
       return deletedPurchase;
+    },
+    addExpense: async (parent, args) => {
+      const {
+        amount,
+        expenseById,
+        expenseT,
+        paidAmount,
+        orderId,
+        remainingAmount,
+        paymentMode,
+        description,
+        expenseStatus,
+        performedById,
+        performedT,
+        expenseConfirmedById,
+        changeLog,
+      } = args;
+      const newExpense = new Expense({
+        amount,
+        expenseById,
+        expenseT,
+        paidAmount,
+        orderId,
+        remainingAmount,
+        paymentMode,
+        description,
+        expenseStatus,
+        performedById,
+        performedT,
+        expenseConfirmedById:
+          expenseStatus.value === "approved" ? performedById : null,
+        changeLog,
+      });
+      await newExpense.save();
+      if (newExpense) {
+        if (expenseStatus.value !== "approved") {
+          const newNotification = new Notification({
+            type: "Expense",
+            data: newExpense._id,
+            unread: true,
+            time: newExpense.performedT,
+          });
+          await newNotification.save();
+          if (newNotification) {
+            io.getIo().emit("refresh", {
+              action: "notification",
+              data: newNotification._id,
+            });
+          }
+        }
+      }
+      return newExpense;
+    },
+    updateExpense: async (parent, args) => {
+      const { id } = args;
+      const oldExpense = await Expense.findById(id);
+      if (oldExpense.expenseStatus.value === "approved") {
+        throw new Error(`Expense with ID ${id} is already approved!`);
+      }
+      // args.purchaseConfirmedById = req.user.userRoleId;
+      const updatedExpense = await Expense.findByIdAndUpdate(id, args);
+      if (!updatedExpense) {
+        throw new Error(`Expense with ID ${id} not found`);
+      }
+      if (updatedExpense && args.expenseStatus.value === "approved") {
+        io.getIo().emit("refresh", {
+          action: "notification",
+          data: null,
+        });
+      }
+      return updatedExpense;
+    },
+    deleteExpense: async (parent, args) => {
+      const { id } = args;
+      const oldExpense = await Expense.findById(id);
+      if (oldExpense.expenseStatus.value === "approved") {
+        throw new Error(`Expense with ID ${id} is already approved!`);
+      }
+      const deletedExpense = await Expense.findByIdAndDelete(id);
+      if (!deletedExpense) {
+        throw new Error(`Expense with ID ${id} not found`);
+      }
+      return deletedExpense;
     },
     addStock: async (parent, args) => {
       const {

@@ -21,6 +21,23 @@ const typeDefs = `
     changeLog: [String]
   }
 
+  type Expense {
+    id: ID
+    amount: Float,
+    expenseById: Employee,
+    expenseT: String,
+    paidAmount: Float,
+    orderId: Order,
+    remainingAmount: Float,
+    paymentMode: Access,
+    description: String,
+    expenseStatus: Access,
+    performedById: User,
+    performedT: String,
+    expenseConfirmedById: User,
+    changeLog: [String]
+  }
+
   type Stock {
     id: ID,
     type: String!,
@@ -148,6 +165,8 @@ const typeDefs = `
   type Query {
     purchases: [Purchase],
     purchase(id: ID!): Purchase,
+    expenses: [Expense],
+    expense(id: ID!): Expense,
     stocks: [Stock],
     stock(id: ID!): Stock,
     utilizations: [Utilization],
@@ -212,6 +231,38 @@ const typeDefs = `
         changeLog: [String]
     ): Purchase
     deletePurchase( id: ID!): Purchase
+    addExpense(
+      amount: Float,
+      expenseById: String,
+      expenseT: String,
+      paidAmount: Float,
+      orderId: String,
+      remainingAmount: Float,
+      paymentMode: AccessInput,
+      description: String,
+      expenseStatus: AccessInput,
+      performedById: String,
+      performedT: String,
+      expenseConfirmedById: String,
+      changeLog: [String]
+    ): Expense
+    updateExpense(
+      id: ID!,
+      amount: Float,
+      expenseById: String,
+      expenseT: String,
+      paidAmount: Float,
+      orderId: String,
+      remainingAmount: Float,
+      paymentMode: AccessInput,
+      description: String,
+      expenseStatus: AccessInput,
+      performedById: String,
+      performedT: String,
+      expenseConfirmedById: String,
+      changeLog: [String]
+    ): Expense
+    deleteExpense( id: ID!): Expense
     addStock(
         type: String,
         quantity: Float,
