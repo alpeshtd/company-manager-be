@@ -22,10 +22,26 @@ const statsTypeDefs = `
     inProgressQtyCost: Int,
     stocks: [UtilizationStock],
   }
+  type OrderStats {
+    total: Int,
+    completed: Int,
+    inProgress: Int,
+    inPipeline: Int,
+    pending: Int,
+    rejected: Int,
+  }
+  type IncomeExpenseStats {
+    totalIncome: Int,
+    totalExpense: Int,
+    paidExpense: Int,
+    remainingExpense: Int
+  }
 `;
 
 const statsQueryDefs = `
-    utilizationStats(fromT: String, toT: String): UtilizationStats
+    utilizationStats(fromT: String, toT: String): UtilizationStats,
+    orderStats(fromT: String, toT: String): OrderStats,
+    incomeExpenseStats(fromT: String, toT: String): IncomeExpenseStats,
 `
 
 module.exports = { statsTypeDefs, statsQueryDefs };

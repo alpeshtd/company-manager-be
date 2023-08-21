@@ -1,3 +1,7 @@
+const Expense = require("./models/Expense");
+const Income = require("./models/Income");
+const Order = require("./models/Order");
+const Purchase = require("./models/Purchase");
 const Utilization = require("./models/Utilization");
 
 const statsResolver = {
@@ -103,6 +107,60 @@ const statsResolver = {
       stocks: [...stockStats],
     };
   },
+  orderStats: async (parent, args) => {
+    const { fromT, toT} = args;
+    const getOrders = await Order.find({ orderT: { $gte: fromT, $lte: toT} }).populate("customer");
+    if (!getOrders) {
+      return {};
+    }
+    const tempData = {
+      completed: 0,
+      inProgress: 0,
+      inPipeline: 0,
+      pending: 0,
+      rejected: 0,
+    }
+    getOrders.forEach(order=>{
+      tempData[order.status.value] += 1;
+    })
+    const orderStats = {
+      total: getOrders.length,
+      ...tempData
+    }
+    return orderStats
+  },
+  incomeExpenseStats: async(parent, args) => {
+    const { fromT, toT} = args;
+    const getExpenses = await Expense.find({});
+    const getPurchases = await Purchase.find({});
+    const getIncomes = await Income.find({});
+
+    if(getExpenses && getPurchases && getIncomes) {
+      const temp = {
+        totalIncome: 0,
+        totalExpense: 0,
+        paidExpense: 0,
+        remainingExpense: 0
+      }
+
+      getExpenses.forEach(expense=>{
+        temp.totalExpense += expense.amount;
+        temp.paidExpense += expense.paidAmount;
+        temp.remainingExpense += expense.remainingAmount;
+      })
+      getPurchases.forEach(purchase=>{
+        temp.totalExpense += purchase.totalAmount;
+        temp.paidExpense += purchase.paidAmount;
+        temp.remainingExpense += purchase.remainingAmount;
+      })
+      getIncomes.forEach(income=>{
+        temp.totalIncome += income.amount;
+      })
+      return temp;
+    }
+
+    return {}
+  }
 };
 
 module.exports = { statsResolver };
