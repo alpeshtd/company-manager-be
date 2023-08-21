@@ -12,6 +12,7 @@ const Utilization = require("./models/Utilization");
 const Vendor = require("./models/Vendor");
 
 const io = require("./socket");
+const { statsResolver } = require("./statsResolver");
 
 // Resolvers define the technique for fetching the types defined in the
 // schema. This resolver retrieves books from the "books" array above.
@@ -102,6 +103,7 @@ const resolvers = {
     employees: async () => await Employee.find({}).populate("performedById"),
     employee: async (parent, args) =>
       await Employee.findById(args.id).populate("performedById"),
+    ...statsResolver,
   },
   Mutation: {
     addPurchase: async (parent, args) => {
@@ -345,6 +347,7 @@ const resolvers = {
         utilizationById,
         utilizationT,
         orderId,
+        utilizationStatus,
         performedById,
         performedT,
         description,
@@ -357,6 +360,7 @@ const resolvers = {
         utilizationById,
         utilizationT,
         orderId,
+        utilizationStatus,
         performedById,
         performedT,
         description,
@@ -391,9 +395,18 @@ const resolvers = {
     },
     deleteUtilization: async (parent, args) => {
       const { id } = args;
+      const oldUtilization = await Utilization.findById(id);
       const deletedUtilization = await Utilization.findByIdAndDelete(id);
       if (!deletedUtilization) {
         throw new Error(`Utilization with ID ${id} not found`);
+      }
+      if (deletedUtilization) {
+        const getStock = await Stock.findById(oldUtilization.stockId._id);
+        if (getStock) {
+          getStock.quantity =
+            getStock.quantity + +oldUtilization.quantity;
+          await getStock.save();
+        }
       }
       return deletedUtilization;
     },

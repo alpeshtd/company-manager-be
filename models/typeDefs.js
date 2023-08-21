@@ -1,3 +1,5 @@
+const {statsTypeDefs, statsQueryDefs} = require('./statsTypeDefs')
+
 const typeDefs = `
   type Purchase {
     id: ID
@@ -57,6 +59,7 @@ const typeDefs = `
     utilizationById: Employee,
     utilizationT: String,
     orderId: Order,
+    utilizationStatus: Access,
     performedById: User,
     performedT: String,
     description: String,
@@ -162,6 +165,8 @@ const typeDefs = `
     changeLog: [String]
   }
 
+  ${statsTypeDefs}
+
   type Query {
     purchases: [Purchase],
     purchase(id: ID!): Purchase,
@@ -184,7 +189,8 @@ const typeDefs = `
     vendors: [Vendor],
     vendor(id: ID!): Vendor,
     employees: [Employee],
-    employee(id: ID!): Employee
+    employee(id: ID!): Employee,
+    ${statsQueryDefs}
   }
 
   # Mutation
@@ -290,6 +296,7 @@ const typeDefs = `
         utilizationById: String,
         utilizationT: String,
         orderId: String,
+        utilizationStatus: AccessInput,
         performedById: String,
         performedT: String,
         description: String,
@@ -303,6 +310,7 @@ const typeDefs = `
         utilizationById: String,
         utilizationT: String,
         orderId: String,
+        utilizationStatus: AccessInput,
         performedById: String,
         performedT: String,
         description: String,

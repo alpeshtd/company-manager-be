@@ -9,6 +9,11 @@ const utilizationSchema = new Schema({
     utilizationById: { type: Schema.Types.ObjectId, ref: 'Employee'},
     utilizationT: String,
     orderId: { type: Schema.Types.ObjectId, ref: 'Order'},
+    utilizationStatus: {
+        label: String,
+        id: String,
+        value: String,
+    },
     performedById: { type: Schema.Types.ObjectId, ref: 'User'},
     performedT: String,
     description: String,
